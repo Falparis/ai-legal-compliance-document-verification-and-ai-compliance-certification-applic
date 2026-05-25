@@ -1,0 +1,162 @@
+// Version: 3.0.0
+type ComplianceResult__885468825 =
+  {recommendations : Text; score : Nat; status : Text};
+type ComplianceResult__970027401 =
+  {recommendations : Text; score : Nat; status : Text};
+type CybersecurityResult__212093978 =
+  {
+    recommendations : Text;
+    score : Nat;
+    status : Text;
+    vulnerabilities : Text
+  };
+type CybersecurityResult__748328155 =
+  {
+    recommendations : Text;
+    score : Nat;
+    status : Text;
+    vulnerabilities : Text
+  };
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type DocumentMetadata__268023399 =
+  {
+    blob : ExternalBlob__246066408;
+    companyName : Text;
+    compliance : ?ComplianceResult__885468825;
+    filename : Text;
+    hash : Blob;
+    id : Text;
+    owner : Principal;
+    regulation : Regulation__1029227467;
+    timestamp : Int
+  };
+type DocumentMetadata__604760763 =
+  {
+    blob : Blob;
+    companyName : Text;
+    compliance : ?ComplianceResult__970027401;
+    filename : Text;
+    hash : Blob;
+    id : Text;
+    owner : Principal;
+    regulation : Regulation__261582561;
+    timestamp : Int
+  };
+type ExternalBlob__246066408 = Blob;
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type Map__158565046<K, V> = Map__297112838<K, V>;
+type Map__297112838<K, V> =
+  {var root : Node__46230540<K, V>; var size : Nat__490723111};
+type Map__605269027<K, V> = Map__158565046<K, V>;
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type OldAccessControlState__841599830 =
+  {
+    var adminAssigned : Bool;
+    var userRoles : OldMap__30246564<Principal, UserRole__717262347>
+  };
+type OldMap__30246564<K, V> = {root : OldTree__1067815148<K, V>; size : Nat};
+type OldStorageState__667501572 =
+  {var authorizedPrincipals : [Principal]; var blobTodeletete : [Blob]};
+type OldTree__1067815148<K, V> =
+  {
+    #black : (OldTree__1067815148<K, V>, K, V, OldTree__1067815148<K, V>);
+    #leaf;
+    #red : (OldTree__1067815148<K, V>, K, V, OldTree__1067815148<K, V>)
+  };
+type Regulation__1029227467 = {#euAIAct; #usAIRegulations};
+type Regulation__261582561 = {#euAIAct; #usAIRegulations};
+type RepositoryMetadata__188858392 =
+  {
+    cybersecurity : ?CybersecurityResult__748328155;
+    id : Text;
+    name : Text;
+    owner : Principal;
+    timestamp : Int;
+    url : Text
+  };
+type RepositoryMetadata__750992423 =
+  {
+    cybersecurity : ?CybersecurityResult__212093978;
+    id : Text;
+    name : Text;
+    owner : Principal;
+    timestamp : Int;
+    url : Text
+  };
+type RiskCategory__203862212 = {#high; #low; #medium};
+type RiskCategory__702454791 = {#high; #low; #medium};
+type RiskEvent__422506687 =
+  {
+    category : RiskCategory__702454791;
+    description : Text;
+    id : Text;
+    issueType : Text;
+    riskScore : Nat;
+    severity : Text;
+    suggestedAction : Text;
+    timestamp : Int
+  };
+type RiskEvent__443049593 =
+  {
+    category : RiskCategory__203862212;
+    description : Text;
+    id : Text;
+    issueType : Text;
+    riskScore : Nat;
+    severity : Text;
+    suggestedAction : Text;
+    timestamp : Int
+  };
+type SDKSecret__38371097 = {createdAt : Int; secret : Text; user : Principal};
+type SDKSecret__561461531 =
+  {createdAt : Int; secret : Text; user : Principal};
+type UserProfile__315128327 = {name : Text};
+type UserProfile__491224006 = {name : Text};
+type UserRole__1054455867 = {#admin; #guest; #user};
+type UserRole__717262347 = {#admin; #guest; #user};
+actor ({
+  in var accessControlState : OldAccessControlState__841599830;
+  in var documents : OldMap__30246564<Text, DocumentMetadata__604760763>;
+  in var repositories : OldMap__30246564<Text, RepositoryMetadata__750992423>;
+  in var riskEvents : OldMap__30246564<Text, RiskEvent__443049593>;
+  in var sdkSecrets : OldMap__30246564<Text, SDKSecret__38371097>;
+  in storage : OldStorageState__667501572;
+  in var userProfiles : OldMap__30246564<Principal, UserProfile__315128327>
+}, {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__605269027<Principal, UserRole__1054455867>
+    };
+  stable documents :
+    {
+      var root : Node__46230540<Text, DocumentMetadata__268023399>;
+      var size : Nat__490723111
+    };
+  stable repositories :
+    {
+      var root : Node__46230540<Text, RepositoryMetadata__188858392>;
+      var size : Nat__490723111
+    };
+  stable riskEvents :
+    {
+      var root : Node__46230540<Text, RiskEvent__422506687>;
+      var size : Nat__490723111
+    };
+  stable sdkSecrets :
+    {
+      var root : Node__46230540<Text, SDKSecret__561461531>;
+      var size : Nat__490723111
+    };
+  stable userProfiles :
+    {
+      var root : Node__46230540<Principal, UserProfile__491224006>;
+      var size : Nat__490723111
+    }
+}) ;

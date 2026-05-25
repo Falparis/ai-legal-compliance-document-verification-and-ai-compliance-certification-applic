@@ -1,0 +1,173 @@
+type http_request_result = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type http_header = 
+ record {
+   name: text;
+   value: text;
+ };
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserProfile = record {name: text;};
+type TransformationOutput = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type TransformationInput = 
+ record {
+   context: blob;
+   response: http_request_result;
+ };
+type RiskEvent = 
+ record {
+   category: RiskCategory;
+   description: text;
+   id: text;
+   issueType: text;
+   riskScore: nat;
+   severity: text;
+   suggestedAction: text;
+   timestamp: int;
+ };
+type RiskCategory = 
+ variant {
+   high;
+   low;
+   medium;
+ };
+type RiskAnalysis = 
+ record {
+   category: RiskCategory;
+   currentScore: nat;
+   events: vec RiskEvent;
+   recommendations: text;
+   summary: text;
+ };
+type RepositoryMetadata = 
+ record {
+   cybersecurity: opt CybersecurityResult;
+   id: text;
+   name: text;
+   owner: principal;
+   timestamp: int;
+   url: text;
+ };
+type Regulation = 
+ variant {
+   euAIAct;
+   usAIRegulations;
+ };
+type ExternalBlob = blob;
+type DocumentMetadata = 
+ record {
+   "blob": ExternalBlob;
+   companyName: text;
+   compliance: opt ComplianceResult;
+   filename: text;
+   hash: blob;
+   id: text;
+   owner: principal;
+   regulation: Regulation;
+   timestamp: int;
+ };
+type CybersecurityResult = 
+ record {
+   recommendations: text;
+   score: nat;
+   status: text;
+   vulnerabilities: text;
+ };
+type CybersecurityResponse = 
+ record {
+   answer: text;
+   references: opt text;
+   securityTips: opt text;
+ };
+type CybersecurityQuery = 
+ record {
+   context: opt text;
+   question: text;
+ };
+type ComplianceResult = 
+ record {
+   recommendations: text;
+   score: nat;
+   status: text;
+ };
+type AIActResponse = 
+ record {
+   answer: text;
+   complianceTips: opt text;
+   references: opt text;
+ };
+type AIActQuery = 
+ record {
+   context: opt text;
+   question: text;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initializeAccessControl: () -> ();
+  addRepository: (name: text, url: text) -> (text);
+  aiActAssistant: (aiQuery: AIActQuery) -> (AIActResponse);
+  analyzeRepository: (repositoryId: text) -> (CybersecurityResult);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  cybersecurityAssistant: (cyberQuery: CybersecurityQuery) ->
+   (CybersecurityResponse);
+  generateSDKSecret: () -> (text);
+  getAllDocuments: () -> (vec DocumentMetadata) query;
+  getAllRepositories: () -> (vec RepositoryMetadata) query;
+  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getComplianceDashboard: () -> (vec DocumentMetadata) query;
+  getCybersecurityDashboard: () -> (vec RepositoryMetadata) query;
+  getExampleDocument: () -> (opt DocumentMetadata) query;
+  getExampleRepository: () -> (opt RepositoryMetadata) query;
+  getRiskAnalysis: () -> (RiskAnalysis) query;
+  getRiskEvents: () -> (vec RiskEvent) query;
+  getSDKSecret: () -> (opt text) query;
+  getUserProfile: (user: principal) -> (opt UserProfile) query;
+  initializeAccessControl: () -> ();
+  isCallerAdmin: () -> (bool) query;
+  makeGetOutcall: (url: text) -> (text);
+  makePostOutcall: (url: text, body: text) -> (text);
+  runRiskAnalysis: () -> (RiskAnalysis);
+  saveCallerUserProfile: (profile: UserProfile) -> ();
+  transform: (input: TransformationInput) -> (TransformationOutput) query;
+  updateCompanyName: (documentId: text, newCompanyName: text) -> ();
+  updateComplianceScore: (documentId: text, newScore: nat) -> ();
+  updateCybersecurityScore: (repositoryId: text, newScore: nat) -> ();
+  uploadDocument: (filename: text, hash: blob, regulation: Regulation,
+   "blob": ExternalBlob, companyName: text) -> (text);
+  verifyDocument: (hash: blob) -> (opt DocumentMetadata) query;
+}
